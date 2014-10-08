@@ -1,0 +1,7 @@
+{{ form.non_field_errors }}
+
+<form action="/login.html" method="post">
+  {% csrf_token %}
+  {{ form }}
+  <input type="submit" value="Submit" />
+</form>
