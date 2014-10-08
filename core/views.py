@@ -7,3 +7,7 @@ from django.contrib.auth.decorators import login_required
 @login_required()
 def myview(request):
     return HttpResponse("Test!!!")
+
+
+def startpage(request):
+    return render(request, "index.html")

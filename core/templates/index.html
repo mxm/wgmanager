@@ -1,0 +1,12 @@
+<h1>Welcome to wgmanager!</h1>
+
+{% if user.is_authenticated %}
+
+<p><a href="/accounts/logout">Log out</a></p>
+
+{% else %}
+<p><a href="/accounts/signup">Sign up</a></p>
+
+<p><a href="/accounts/login">Log in</a></p>
+
+{% endif %}
