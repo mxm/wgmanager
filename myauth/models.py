@@ -6,6 +6,17 @@ from django.utils import timezone
 Custom User classes for wgmanager
 """
 
+from django.dispatch import receiver
+from allauth.account.signals import email_confirmed
+
+""" Confirmation signal received by the allauth app"""
+@receiver(email_confirmed)
+def email_confirmed(request, email_address, **kwargs):
+    user = MyUser.objects.get(email=email_address.email)
+    user.is_active = True
+    user.save()
+
+""" Custom UserManager required for admin app"""
 class CustomUserManager(BaseUserManager):
 
     def create_user(self, email, first_name, password=None):
@@ -34,7 +45,7 @@ class CustomUserManager(BaseUserManager):
         u.save(using=self._db)
         return u
 
-
+""" Custom user model """
 class MyUser(AbstractBaseUser):
     email = models.EmailField(unique=True, max_length=255)
 
