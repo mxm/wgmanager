@@ -1,0 +1,4 @@
+env/
+secret_key.py
+*.pyc
+db.sqlite3
