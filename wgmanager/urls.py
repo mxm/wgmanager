@@ -8,6 +8,8 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^accounts/', include('allauth.urls')),
+
     url(r'^myview.html', 'core.views.myview'),
     url(r'^login.html', 'django.contrib.auth.views.login',
         {'template_name':'login.html'}),
