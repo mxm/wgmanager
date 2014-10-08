@@ -132,4 +132,6 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 
 SITE_ID=1
 
+
+#EMAIL_BACKEND = 'django_sendmail_backend.backends.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
