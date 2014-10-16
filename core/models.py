@@ -9,21 +9,34 @@ class Bill(models.Model):
     name = models.CharField(max_length=1023)
     is_open = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.name
+
+
 class Payer(models.Model):
     user = models.ForeignKey(MyUser)
     bill = models.ForeignKey(Bill, related_name="payers")
     fraction = models.DecimalField(max_digits=3, decimal_places=2)
 
+    def __str__(self):
+        return _("Bill '%(bill)s': %(user)s with fraction %(fraction)s") % {'bill': self.bill, 'user': self.user, 'fraction': self.fraction}
+
 class Shop(models.Model):
     name = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.name
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
 
+    def __str__(self):
+        return self.name
+
 class Shopping(models.Model):
     user = models.ForeignKey(MyUser)
     time = models.DateField(default=datetime.now)
-    place = models.ForeignKey(Shop, related_name="shoppings")
+    shop = models.ForeignKey(Shop, related_name="shoppings")
     expenses = models.DecimalField(max_digits=10,decimal_places=2)
     num_products = models.PositiveIntegerField()
     tags = models.ManyToManyField(Tag, related_name="tags")
@@ -31,4 +44,4 @@ class Shopping(models.Model):
     comment = models.CharField(max_length=1023,blank=True, null=True)
 
     def __str__(self):
-        return _("%(expenses) with %(products) by %(user) at %(shop)") % {'expenses': self.expenses, 'user': self.user, 'products':           num_products, 'shop': self.shop}
+        return _("%(expenses)s with %(products)d items by %(user)s at %(shop)s") % {'expenses': self.expenses, 'user': self.user, 'products': self.num_products, 'shop': self.shop}
