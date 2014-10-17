@@ -1,7 +1,7 @@
 from django.db import models
 
 from myauth.models import MyUser
-from datetime import datetime
+from django.utils import timezone
 
 class ShoppingListEntry(models.Model):
     user = models.ForeignKey(MyUser)

@@ -1,7 +1,7 @@
 from django.db import models
 from myauth.models import MyUser
 
-from datetime import datetime
+from django.utils import timezone
 from django.utils.translation import ugettext as _
 
 
@@ -37,7 +37,7 @@ class Tag(models.Model):
 
 class Shopping(models.Model):
     user = models.ForeignKey(MyUser)
-    time = models.DateField(default=datetime.now)
+    time = models.DateField(default=timezone.now)
     shop = models.ForeignKey(Shop, related_name="shoppings")
     expenses = models.DecimalField(max_digits=10,decimal_places=2)
     num_products = models.PositiveIntegerField()
