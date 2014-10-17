@@ -43,7 +43,7 @@ class Shopping(models.Model):
     num_products = models.PositiveIntegerField()
     tags = models.ManyToManyField(Tag, related_name="tags")
     bill = models.ForeignKey(Bill, null=True, blank=True, related_name="shoppings")
-    comment = models.CharField(max_length=1023, blank=True, null=True)
+    comment = models.CharField(max_length=1024, blank=True, null=True)
 
     def __str__(self):
         return _("%(expenses)s with %(products)d items by %(user)s at %(shop)s") % {'expenses': self.expenses, 'user': self.user, 'products': self.num_products, 'shop': self.shop}

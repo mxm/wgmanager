@@ -41,12 +41,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'myauth',
-    'core',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'myauth',
+    'core',
+    'extra',
 )
 
 MIDDLEWARE_CLASSES = (
