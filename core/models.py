@@ -4,14 +4,21 @@ from myauth.models import MyUser
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
-
-class Bill(models.Model):
-    name = models.CharField(max_length=1023)
-    is_open = models.BooleanField(default=True)
+class Community(models.Model):
+    name = models.CharField(max_length=32)
+    members = models.ManyToManyField(MyUser, related_name="members")
+    # other settings
 
     def __str__(self):
         return self.name
 
+class Bill(models.Model):
+    name = models.CharField(max_length=1023)
+    is_open = models.BooleanField(default=True)
+    community = models.ForeignKey(Community)
+
+    def __str__(self):
+        return self.name
 
 class Payer(models.Model):
     # TODO user should be unique per bill
@@ -24,12 +31,14 @@ class Payer(models.Model):
 
 class Shop(models.Model):
     name = models.CharField(max_length=30)
+    community = models.ForeignKey(Community)
 
     def __str__(self):
         return self.name
 
 class Tag(models.Model):
     name = models.CharField(max_length=30, unique=True)
+    community = models.ForeignKey(Community)
     visible = models.BooleanField(default=True)
 
     def __str__(self):
@@ -37,6 +46,7 @@ class Tag(models.Model):
 
 class Shopping(models.Model):
     user = models.ForeignKey(MyUser)
+    community = models.ForeignKey(Community)
     time = models.DateField(default=timezone.now)
     shop = models.ForeignKey(Shop, related_name="shoppings")
     expenses = models.DecimalField(max_digits=10,decimal_places=2)
