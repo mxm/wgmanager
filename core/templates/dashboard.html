@@ -1,0 +1,25 @@
+{% extends "wgmanager_base.html" %}
+{% load i18n %}
+
+{% block title %}Test{% endblock %}
+
+{% block content %}
+
+<h1>Welcome to wgmanager!</h1>
+
+<h2>Communities</h2>
+<ul>
+{% for community in communities %}
+<li><a href="/community/{{community.id}}">{{ community.name }}</a></li>
+{% endfor %}
+</ul>
+
+<h2>{% trans "My last shoppings" %}</h2>
+<ul>
+{% for shopping in last_shoppings %}
+<li>{{ shopping }}</li>
+{% endfor %}
+</ul>
+
+
+{% endblock %}

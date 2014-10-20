@@ -10,10 +10,13 @@ urlpatterns = patterns('',
 
     url(r'^accounts/', include('allauth.urls')),
 
-    url(r'^$', 'core.views.startpage'),
+    url(r'^$', 'core.views.homepage'),
 
-    url(r'^myview.html', 'core.views.myview'),
-    url(r'^login.html', 'django.contrib.auth.views.login',
+    url(r'^dashboard/$', 'core.views.dashboard'),
+    url(r'^community/(\d)/$', 'core.views.community'),
+
+
+    url(r'^login.html$', 'django.contrib.auth.views.login',
         {'template_name':'login.html'}),
-    url(r'^logout.html', 'django.contrib.auth.views.logout',{'template_name':'logout.html'}),
+    url(r'^logout.html$', 'django.contrib.auth.views.logout',{'template_name':'logout.html'}),
 )

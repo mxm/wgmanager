@@ -1,12 +1,10 @@
-<h1>Welcome to wgmanager!</h1>
+{% extends "wgmanager_base.html" %}
+{% load i18n %}
 
-{% if user.is_authenticated %}
+{% block title %}Test{% endblock %}
 
-<p><a href="/accounts/logout">Log out</a></p>
+{% block content %}
 
-{% else %}
-<p><a href="/accounts/signup">Sign up</a></p>
+This is the main page.
 
-<p><a href="/accounts/login">Log in</a></p>
-
-{% endif %}
+{% endblock %}
