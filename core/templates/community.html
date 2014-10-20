@@ -13,12 +13,38 @@
 {% endfor %}
 </ul>
 
-<h2>{% trans "My last shoppings" %}</h2>
+<h2>{% trans "Last shoppings" %}</h2>
 <ul>
 {% for shopping in last_shoppings %}
 <li>{{ shopping }}</li>
 {% endfor %}
 </ul>
+
+
+<h2>{% trans "My last shoppings" %}</h2>
+<ul>
+{% for shopping in my_last_shoppings %}
+<li>{{ shopping }}</li>
+{% endfor %}
+</ul>
+
+<h2>{% trans "Last messages" %}</h2>
+<ul>
+{% for message in last_messages %}
+<li>{{ message.user.first_name }}: {{ message.message }}</li>
+{% endfor %}
+</ul>
+
+
+<h2>{% trans "Last shopping list entries" %}</h2>
+<ul>
+{% for entry in last_list_entries %}
+<li>{{ entry.user.first_name }}: {{ entry.subject }}</li>
+{% endfor %}
+</ul>
+
+
+
 
 
 {% endblock %}

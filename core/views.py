@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
 from core.models import Community, Shopping
-from extra.models import ChatEntry
+from extra.models import ChatEntry, ShoppingListEntry
 
 def homepage(request):
     return render(request, "index.html")
@@ -26,6 +26,7 @@ def community(request, community):
         'community': get_community(community, request.user),
         'last_shoppings': Shopping.objects.filter(community=community)[:5],
         'my_last_shoppings': Shopping.objects.filter(user=request.user, community=community)[:5],
+        'last_list_entries': ShoppingListEntry.objects.filter(community=community, time_done=None),
         'last_messages': ChatEntry.objects.filter(community=community)[:5],
     }
     return render(request, "community.html", vars)
