@@ -7,15 +7,15 @@ from django.utils.translation import ugettext as _
 class Community(models.Model):
     name = models.CharField(max_length=32)
     members = models.ManyToManyField(MyUser, related_name="members")
-    # other settings
+    conf_sendmail = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
 
 class Bill(models.Model):
     name = models.CharField(max_length=1023)
-    is_open = models.BooleanField(default=True)
     community = models.ForeignKey(Community)
+    is_open = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -49,9 +49,12 @@ class Shopping(models.Model):
     community = models.ForeignKey(Community)
     time = models.DateField(default=timezone.now)
     shop = models.ForeignKey(Shop, related_name="shoppings")
-    expenses = models.DecimalField(max_digits=10,decimal_places=2)
+    expenses = models.DecimalField(max_digits=10, decimal_places=2)
     num_products = models.PositiveIntegerField()
     tags = models.ManyToManyField(Tag, related_name="tags")
+    # this shopping will be part of the monthly billing
+    is_regular_shopping = models.BooleanField(default=True)
+    # this shopping is assigned to a specific bill
     bill = models.ForeignKey(Bill, null=True, blank=True, related_name="shoppings")
     comment = models.CharField(max_length=1024, blank=True, null=True)
 
