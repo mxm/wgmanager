@@ -4,11 +4,16 @@ from myauth.models import MyUser
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
+from django.core.urlresolvers import reverse
+
 class Community(models.Model):
     name = models.CharField(max_length=32)
     time = models.DateTimeField(default=timezone.now)
     members = models.ManyToManyField(MyUser, related_name="members")
     conf_sendmail = models.BooleanField(default=True)
+
+    def get_absolute_url(self):
+        return reverse('core.views.community', args=[self.id])
 
     def __str__(self):
         return self.name
@@ -59,6 +64,12 @@ class Shopping(models.Model):
     # this shopping is assigned to a specific bill
     bill = models.ForeignKey(Bill, null=True, blank=True, related_name="shoppings")
     comment = models.CharField(max_length=1024, blank=True, null=True)
+
+    class Meta:
+        ordering = ["-shopping_day"]
+
+    def get_absolute_url(self):
+        return reverse('shopping', args=[self.community.id, self.id])
 
     def __str__(self):
         return _("%(expenses)s with %(products)d items by %(user)s at %(shop)s") % {'expenses': self.expenses, 'user': self.user, 'products': self.num_products, 'shop': self.shop}

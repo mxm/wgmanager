@@ -1,0 +1,21 @@
+{% extends "wgmanager_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "New Shopping" %}{% endblock %}
+
+{% block content %}
+
+<h1>{{ community.name }}</h1>
+
+<form action ="{{request.path}}" method="post">
+{% csrf_token %}
+
+{% for field in form %}
+{{ field.errors}} <br/>
+{{ field }}<br/>
+{% endfor %}
+<input type="submit" value="{% trans "Submit" %}">
+</form>
+
+
+{% endblock %}

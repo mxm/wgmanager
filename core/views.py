@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 from core.models import Community, Shopping
 from extra.models import ChatEntry, ShoppingListEntry
 
-from core.forms import ShoppingForm
+from django.views.generic import CreateView, UpdateView, DeleteView
+
 
 def homepage(request):
     return render(request, "index.html")
@@ -33,23 +34,28 @@ def community(request, community_id):
     }
     return render(request, "community.html", vars)
 
-@login_required()
-def add_shopping(request, community_id):
-    community = get_community(community_id, request.user)
-    if request.method == "POST":
-        form = ShoppingForm(request.POST)
-        if form.is_valid():
-            shopping = form.save(commit=False)
-            shopping.community = community
-            shopping.user = request.user
-            shopping.save()
-            return redirect(community.get_absolute_url())
-    else:
-        form = ShoppingForm()
-    vars = {'form': form
-    }
-    return render(request, "shopping.html", vars)
 
+
+class ShoppingView(object):
+    model = Shopping
+    template_name = "shopping_form.html"
+    fields = ['shopping_day', 'shop', 'expenses', 'num_products', 'tags',
+              'automatic_billing', 'bill', 'comment']
+
+class ShoppingCreate(ShoppingView, CreateView):
+    def form_valid(self, form):
+        form.instance.community = get_community(self.kwargs['community_id'], self.request.user)
+        form.instance.user = self.request.user
+        return super(ShoppingCreate, self).form_valid(form)
+
+class ShoppingUpdate(ShoppingView, UpdateView):
+    def get_object(self):
+        return get_shopping(self.kwargs['community_id'], self.kwargs['pk'], self.request.user)
+
+# TODO
+class ShoppingDelete(DeleteView):
+    model = Shopping
+    template_name = "shopping_confirm_delete.html"
 
 def get_community(community_id, user):
     try:
@@ -58,5 +64,13 @@ def get_community(community_id, user):
         raise Http404
     if not user in comm_object.members.all():
         raise PermissionDenied
-    else:
-        return comm_object
+    return comm_object
+
+def get_shopping(community_id, shopping_id, user=None):
+    try:
+        shopping_object = Shopping.objects.get(pk=shopping_id, community=community_id)
+    except Shopping.DoesNotExist:
+        raise Http404
+    if user and shopping_object.user.id != user.id:
+        raise PermissionDenied
+    return shopping_object
