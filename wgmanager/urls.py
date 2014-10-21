@@ -13,7 +13,10 @@ urlpatterns = patterns('',
     url(r'^$', 'core.views.homepage'),
 
     url(r'^dashboard/$', 'core.views.dashboard'),
+
     url(r'^community/(\d)/$', 'core.views.community'),
+    url(r'^community/(\d)/add/shopping/$', 'core.views.add_shopping'),
+
 
 
     url(r'^login.html$', 'django.contrib.auth.views.login',
