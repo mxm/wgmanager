@@ -27,10 +27,12 @@ class Bill(models.Model):
         return self.name
 
 class Payer(models.Model):
-    # TODO user should be unique per bill
     user = models.ForeignKey(MyUser)
     bill = models.ForeignKey(Bill, related_name="payers")
     fraction = models.DecimalField(max_digits=3, decimal_places=2)
+
+    class Meta:
+        unique_together = (('user', 'bill'),)
 
     def __str__(self):
         return _("Bill '%(bill)s': %(user)s with fraction %(fraction)s") % {'bill': self.bill, 'user': self.user, 'fraction': self.fraction}
@@ -38,14 +40,21 @@ class Payer(models.Model):
 class Shop(models.Model):
     name = models.CharField(max_length=30)
     community = models.ForeignKey(Community)
+    visible = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = (('name', 'community'),)
 
     def __str__(self):
         return self.name
 
 class Tag(models.Model):
-    name = models.CharField(max_length=30, unique=True)
+    name = models.CharField(max_length=30)
     community = models.ForeignKey(Community)
     visible = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = (('name', 'community'),)
 
     def __str__(self):
         return self.name
