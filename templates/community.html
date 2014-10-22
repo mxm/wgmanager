@@ -5,6 +5,8 @@
 
 {% block content %}
 
+<p><a href="{% url 'dashboard' %}">Dashboard</a></p>
+
 <h1>{{ community.name }}</h1>
 
 <ul>
@@ -16,7 +18,7 @@
 <h2>{% trans "Last shoppings" %}</h2>
 <ul>
 {% for shopping in last_shoppings %}
-<li>{{ shopping }}</li>
+<li><a href="{{ shopping.get_absolute_url }}">{{ shopping }}</a></li>
 {% endfor %}
 </ul>
 

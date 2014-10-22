@@ -38,7 +38,9 @@ def community(request, community_id):
 
 class ShoppingView(object):
     model = Shopping
-    template_name = "shopping_form.html"
+    # TODO give own template
+    template_name = "generic_form.html"
+    #template_name = "shopping_form.html"
     fields = ['shopping_day', 'shop', 'expenses', 'num_products', 'tags',
               'automatic_billing', 'bill', 'comment']
 
