@@ -6,10 +6,12 @@ from django.utils.translation import ugettext as _
 
 from django.core.urlresolvers import reverse
 
+
 class Community(models.Model):
+    # TODO name should be unique for clarity?
     name = models.CharField(max_length=32)
     time = models.DateTimeField(default=timezone.now)
-    members = models.ManyToManyField(MyUser, related_name="members")
+    members = models.ManyToManyField(MyUser, related_name="members", blank=True)
     conf_sendmail = models.BooleanField(default=True)
 
     def get_absolute_url(self):

@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.decorators import login_required
 
 from core.models import Community, Shopping
 from extra.models import ChatEntry, ShoppingListEntry
+from myauth.models import MyUser
 
 from django.views.generic import CreateView, UpdateView, DeleteView
 
@@ -34,6 +35,24 @@ def community(request, community_id):
     }
     return render(request, "community.html", vars)
 
+
+class CommunityCreate(CreateView):
+    model = Community
+    # TODO give own template
+    template_name = "generic_form.html"
+    #template_name = "community_form.html"
+    fields = ['name', 'members']
+
+    def get_form(self, form_class):
+        form = super(CommunityCreate, self).get_form(form_class)
+        form.fields['members'].queryset = MyUser.objects.exclude(id=self.request.user.id)
+        return form
+
+    def form_valid(self, form):
+        # add ourselves so we can access the new community
+        community = form.save()
+        community.members.add(self.request.user)
+        return HttpResponseRedirect(community.get_absolute_url())
 
 
 class ShoppingView(object):
@@ -68,7 +87,7 @@ def get_community(community_id, user):
         raise PermissionDenied
     return comm_object
 
-def get_shopping(community_id, shopping_id, user=None):
+def get_shopping(community_id, shopping_id, user):
     try:
         shopping_object = Shopping.objects.get(pk=shopping_id, community=community_id)
     except Shopping.DoesNotExist:

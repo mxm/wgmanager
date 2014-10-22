@@ -7,7 +7,7 @@
 
 <h1>Welcome to wgmanager!</h1>
 
-<h2>Communities</h2>
+<h2>Communities <a href="{% url 'community_new' %}">+</a></h2>
 <ul>
 {% for community in communities %}
 <li><a href="/community/{{community.id}}">{{ community.name }}</a></li>
@@ -20,6 +20,5 @@
 <li>{{ shopping }}</li>
 {% endfor %}
 </ul>
-
 
 {% endblock %}
