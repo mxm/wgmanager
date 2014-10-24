@@ -54,6 +54,13 @@
 </ul>
 
 
+<h2>{% trans "Last bills" %}</h2>
+<ul>
+{% for entry in last_bills %}
+<li><a href="{{ entry.get_absolute_url }}">{{ entry }}</a></li>
+{% endfor %}
+</ul>
+
 
 
 

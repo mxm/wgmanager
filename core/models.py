@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 
 from django.core.urlresolvers import reverse
 
+from core.util import first_day_of_month, last_day_of_month
 
 class Community(models.Model):
     # TODO name should be unique for clarity?
@@ -14,19 +15,47 @@ class Community(models.Model):
     members = models.ManyToManyField(MyUser, related_name="members", blank=True)
     conf_sendmail = models.BooleanField(default=True)
 
+    def get_bills(self):
+        return Bill.objects.filter(community=self)
+
     def get_absolute_url(self):
-        return reverse('core.views.community', args=[self.id])
+        return reverse('community', args=[self.id])
 
     def __str__(self):
         return self.name
 
 class Bill(models.Model):
-    name = models.CharField(max_length=1023)
     community = models.ForeignKey(Community)
-    is_open = models.BooleanField(default=True)
+    start = models.DateField(default=first_day_of_month)
+    end = models.DateField(default=last_day_of_month)
+    is_special = models.BooleanField(default=False)
+    is_closed = models.BooleanField(default=False)
+    description = models.CharField(max_length=1024, null=True, blank=True)
+
+    def get_shoppings(self):
+        return Shopping.objects.filter(shopping_day__range=[self.start, self.end])
+
+    def get_payers(self):
+        return Payer.objects.filter(bill=self)
+
+    def get_stats(self):
+        pass
+
+    def get_dues(self):
+        pass
+
+    def close(self):
+        if not self.closed:
+            # make out a bill / calculate dues
+            # send mail
+            self.is_closed = True
+
+    def get_absolute_url(self):
+        return reverse('bill', args=[self.community.id, self.id])
 
     def __str__(self):
-        return self.name
+        return str(self.start) + " - " + str(self.end)
+
 
 class Payer(models.Model):
     user = models.ForeignKey(MyUser)
@@ -70,10 +99,8 @@ class Shopping(models.Model):
     expenses = models.DecimalField(max_digits=10, decimal_places=2)
     num_products = models.PositiveIntegerField()
     tags = models.ManyToManyField(Tag, related_name="tags")
-    # this shopping will be part of the monthly billing
-    automatic_billing = models.BooleanField(default=True)
-    # this shopping is assigned to a specific bill
-    bill = models.ForeignKey(Bill, null=True, blank=True, related_name="shoppings")
+    #bill = models.ForeignKey(Bill, null=True, blank=True, related_name="shoppings")
+    billing = models.BooleanField(default=True)
     comment = models.CharField(max_length=1024, blank=True, null=True)
 
     class Meta:

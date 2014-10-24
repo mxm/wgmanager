@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.decorators import login_required
 
-from core.models import Community, Shopping
+from core.models import Community, Shopping, Bill
 from extra.models import ChatEntry, ShoppingListEntry
 from myauth.models import MyUser
 
@@ -32,6 +32,7 @@ def community(request, community_id):
         'my_last_shoppings': Shopping.objects.filter(user=request.user, community=community_id)[:5],
         'last_list_entries': ShoppingListEntry.objects.filter(community=community_id, time_done=None),
         'last_messages': ChatEntry.objects.filter(community=community_id)[:5],
+        'last_bills': Bill.objects.filter(community=community_id)[:5],
     }
     return render(request, "community.html", vars)
 
@@ -60,10 +61,13 @@ class ShoppingView(object):
     # TODO give own template
     template_name = "generic_form.html"
     #template_name = "shopping_form.html"
-    fields = ['shopping_day', 'shop', 'expenses', 'num_products', 'tags',
-              'automatic_billing', 'bill', 'comment']
+    fields = ['shopping_day', 'shop', 'expenses', 'billing', 'num_products', 'tags', 'comment']
 
 class ShoppingCreate(ShoppingView, CreateView):
+    def get_form(self, form_class):
+
+        return super(ShoppingCreate, self).get_form(form_class)
+
     def form_valid(self, form):
         form.instance.community = get_community(self.kwargs['community_id'], self.request.user)
         form.instance.user = self.request.user
@@ -77,6 +81,19 @@ class ShoppingUpdate(ShoppingView, UpdateView):
 class ShoppingDelete(DeleteView):
     model = Shopping
     template_name = "shopping_confirm_delete.html"
+
+
+def view_bill(request, community_id, bill_id):
+    bill = get_community_object(community_id, Bill, bill_id)
+    vars = {
+        'community': get_community(community_id, request.user),
+        'bill': bill,
+        'shoppings': bill.get_shoppings(),
+        'payers': bill.get_payers(),
+        #'dues': bill.get_dues(),
+    }
+    return render(request, "bill.html", vars)
+
 
 def get_community(community_id, user):
     try:
