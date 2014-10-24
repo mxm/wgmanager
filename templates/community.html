@@ -1,13 +1,15 @@
 {% extends "wgmanager_base.html" %}
 {% load i18n %}
 
-{% block title %}Test{% endblock %}
+{% block title %}{{ community.name }}{% endblock %}
 
 {% block content %}
 
 <p><a href="{% url 'dashboard' %}">Dashboard</a></p>
 
 <h1>{{ community.name }}</h1>
+
+<p><a href="{% url 'shopping_new' community.id %}">+</a></p>
 
 <ul>
 {% for community in communities %}
@@ -18,7 +20,13 @@
 <h2>{% trans "Last shoppings" %}</h2>
 <ul>
 {% for shopping in last_shoppings %}
-<li><a href="{{ shopping.get_absolute_url }}">{{ shopping }}</a></li>
+<li>
+{% if shopping.user == user %}
+{{ shopping }} <a href="{{ shopping.get_absolute_url }}">edit</a>
+{% else %}
+{{ shopping }}
+{% endif %}
+</li>
 {% endfor %}
 </ul>
 
