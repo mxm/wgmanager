@@ -71,7 +71,7 @@ class ShoppingCreate(ShoppingView, CreateView):
 
 class ShoppingUpdate(ShoppingView, UpdateView):
     def get_object(self):
-        return get_shopping(self.kwargs['community_id'], self.kwargs['pk'], self.request.user)
+        return get_community_object(self.kwargs['community_id'], Shopping, self.kwargs['pk'], self.request.user)
 
 # TODO
 class ShoppingDelete(DeleteView):
@@ -87,11 +87,11 @@ def get_community(community_id, user):
         raise PermissionDenied
     return comm_object
 
-def get_shopping(community_id, shopping_id, user):
+def get_community_object(community_id, obj_class, obj_id, user=None):
     try:
-        shopping_object = Shopping.objects.get(pk=shopping_id, community=community_id)
-    except Shopping.DoesNotExist:
+        obj = obj_class.objects.get(id=obj_id, community=community_id)
+    except obj_class.DoesNotExist:
         raise Http404
-    if user and shopping_object.user.id != user.id:
+    if user and obj.user != user:
         raise PermissionDenied
-    return shopping_object
+    return obj
