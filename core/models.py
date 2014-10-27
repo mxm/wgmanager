@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import Sum
-from myauth.models import MyUser
 
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -9,12 +8,20 @@ from django.core.urlresolvers import reverse
 
 from core import util
 from core.util import first_day_of_month, last_day_of_month
+from myauth.models import MyUser
+
+class User(MyUser):
+    class Meta:
+        proxy = True
+
+    def check_perms(self, community, obj=None):
+        return self in community.members.all() and (not obj or obj.user == self)
 
 class Community(models.Model):
     # TODO name should be unique for clarity?
     name = models.CharField(max_length=32)
     time = models.DateTimeField(default=timezone.now)
-    members = models.ManyToManyField(MyUser, related_name="members", blank=True)
+    members = models.ManyToManyField(User, related_name="members", blank=True)
     conf_sendmail = models.BooleanField(default=True)
 
     def get_bills(self):
@@ -73,7 +80,7 @@ class Bill(models.Model):
 
 
 class Payer(models.Model):
-    user = models.ForeignKey(MyUser)
+    user = models.ForeignKey(User)
     bill = models.ForeignKey(Bill, related_name="payers")
     fraction = models.DecimalField(max_digits=3, decimal_places=2)
 
@@ -112,7 +119,7 @@ class Tag(models.Model):
         return self.name
 
 class Shopping(models.Model):
-    user = models.ForeignKey(MyUser)
+    user = models.ForeignKey(User)
     community = models.ForeignKey(Community)
     time = models.DateTimeField(default=timezone.now)
     shopping_day = models.DateField(default=timezone.now)

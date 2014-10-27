@@ -1,12 +1,11 @@
 from django.db import models
 from django.utils import timezone
 
-from myauth.models import MyUser
-from core.models import Community
+from core.models import User, Community
 
 class ShoppingListEntry(models.Model):
     community = models.ForeignKey(Community)
-    user = models.ForeignKey(MyUser)
+    user = models.ForeignKey(User)
     subject = models.CharField(max_length=32)
     description = models.CharField(max_length=1024, blank=True)
     time_created = models.DateTimeField(default=timezone.now)
@@ -17,7 +16,7 @@ class ShoppingListEntry(models.Model):
 
 class ChatEntry(models.Model):
     community = models.ForeignKey(Community)
-    user = models.ForeignKey(MyUser)
+    user = models.ForeignKey(User)
     message = models.CharField(max_length=1024)
 
     def __str__(self):

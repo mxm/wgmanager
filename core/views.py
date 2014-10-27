@@ -26,8 +26,11 @@ def dashboard(request):
 
 @login_required()
 def community(request, community_id):
+    community = get_community(community_id)
+    if not request.user.check_perms(community):
+        raise PermissionDenied
     vars = {
-        'community': get_community(community_id, request.user),
+        'community': community,
         'last_shoppings': Shopping.objects.filter(community=community_id)[:5],
         'my_last_shoppings': Shopping.objects.filter(user=request.user, community=community_id)[:5],
         'last_list_entries': ShoppingListEntry.objects.filter(community=community_id, time_done=None),
@@ -46,7 +49,7 @@ class CommunityCreate(CreateView):
 
     def get_form(self, form_class):
         form = super(CommunityCreate, self).get_form(form_class)
-        form.fields['members'].queryset = MyUser.objects.exclude(id=self.request.user.id)
+        form.fields['members'].queryset = User.objects.exclude(id=self.request.user.id)
         return form
 
     def form_valid(self, form):
@@ -75,7 +78,11 @@ class ShoppingCreate(ShoppingView, CreateView):
 
 class ShoppingUpdate(ShoppingView, UpdateView):
     def get_object(self):
-        return get_community_object(self.kwargs['community_id'], Shopping, self.kwargs['pk'], self.request.user)
+        community = get_community(self.kwargs['community_id'])
+        obj = super(ShoppingUpdate, self).get_object()
+        if not self.request.user.check_perms(community, obj):
+            raise PermissionDenied
+        return obj
 
 # TODO
 class ShoppingDelete(DeleteView):
@@ -95,13 +102,11 @@ def view_bill(request, community_id, bill_id):
     return render(request, "bill.html", vars)
 
 
-def get_community(community_id, user):
+def get_community(community_id):
     try:
         comm_object = Community.objects.get(pk=community_id)
     except Community.DoesNotExist:
         raise Http404
-    if not user in comm_object.members.all():
-        raise PermissionDenied
     return comm_object
 
 def get_community_object(community_id, obj_class, obj_id, user=None):

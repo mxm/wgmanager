@@ -62,7 +62,7 @@ MIDDLEWARE_CLASSES = (
 
 # custom user model for using email as usernames
 # discussion: https://groups.google.com/forum/#!topic/django-users/DJQ-3mbmgHw
-AUTH_USER_MODEL = 'myauth.MyUser'
+AUTH_USER_MODEL = 'core.User'
 
 ROOT_URLCONF = 'wgmanager.urls'
 
