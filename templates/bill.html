@@ -1,0 +1,42 @@
+{% extends "wgmanager_base.html" %}
+{% load i18n %}
+
+{% block title %}Test{% endblock %}
+
+{% block content %}
+
+<p><a href="{% url 'dashboard' %}">Dashboard</a></p>
+
+<h1>{{ community.name }}</h1>
+
+<h2>{{ bill }}: {{ bill.get_sum }}</h2>
+
+<h2>{% trans "Payers" %}</h2>
+<ul>
+{% for payer in payers %}
+<li>{{ payer }}</li>
+{% endfor %}
+</ul>
+
+<h2>{% trans "Dues" %}</h2>
+<ul>
+{% for user, due in dues.items %}
+<li>{{ due }} {{ user }}</li>
+{% endfor %}
+</ul>
+
+<h2>{% trans "Shoppings" %}</h2>
+<ul>
+{% for shopping in shoppings %}
+<li>
+{% if shopping.user == user %}
+{{ shopping }} <a href="{{ shopping.get_absolute_url }}">edit</a>
+{% else %}
+{{ shopping }}
+{% endif %}
+</li>
+{% endfor %}
+</ul>
+
+
+{% endblock %}

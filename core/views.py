@@ -82,7 +82,7 @@ class ShoppingDelete(DeleteView):
     model = Shopping
     template_name = "shopping_confirm_delete.html"
 
-
+@login_required()
 def view_bill(request, community_id, bill_id):
     bill = get_community_object(community_id, Bill, bill_id)
     vars = {
@@ -90,7 +90,7 @@ def view_bill(request, community_id, bill_id):
         'bill': bill,
         'shoppings': bill.get_shoppings(),
         'payers': bill.get_payers(),
-        #'dues': bill.get_dues(),
+        'dues': bill.get_dues(),
     }
     return render(request, "bill.html", vars)
 

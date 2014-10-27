@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from myauth.models import MyUser
 
 from django.utils import timezone
@@ -6,6 +7,7 @@ from django.utils.translation import ugettext as _
 
 from django.core.urlresolvers import reverse
 
+from core import util
 from core.util import first_day_of_month, last_day_of_month
 
 class Community(models.Model):
@@ -33,16 +35,29 @@ class Bill(models.Model):
     description = models.CharField(max_length=1024, null=True, blank=True)
 
     def get_shoppings(self):
-        return Shopping.objects.filter(shopping_day__range=[self.start, self.end])
+        return Shopping.objects.filter(community=self.community, shopping_day__range=[self.start, self.end])
+
+    def get_sum(self):
+        return self.get_shoppings().aggregate(Sum('expenses'))['expenses__sum']
 
     def get_payers(self):
         return Payer.objects.filter(bill=self)
 
-    def get_stats(self):
-        pass
-
     def get_dues(self):
-        pass
+        payers = self.get_payers()
+        num_payers = payers.__len__()
+        total_expenses = self.get_sum()
+        try:
+            due_per_payer = util.round_up(total_expenses / num_payers)
+        except:
+            due_per_payer = 0
+        dues = {}
+        for payer in payers:
+            expenses = payer.get_expenses(self)
+            payer_due = util.round_up(payer.fraction * due_per_payer) - expenses
+            dues[payer] = payer_due
+        return dues
+
 
     def close(self):
         if not self.closed:
@@ -64,6 +79,12 @@ class Payer(models.Model):
 
     class Meta:
         unique_together = (('user', 'bill'),)
+
+    def get_expenses(self, bill):
+        shoppings = bill.get_shoppings().filter(user=self.user)
+        user_expenses = shoppings.aggregate(Sum('expenses'))['expenses__sum']
+        return user_expenses if user_expenses != None else 0
+
 
     def __str__(self):
         return _("Bill '%(bill)s': %(user)s with fraction %(fraction)s") % {'bill': self.bill, 'user': self.user, 'fraction': self.fraction}
