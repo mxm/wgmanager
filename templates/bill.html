@@ -7,27 +7,32 @@
 
 <p><a href="{% url 'dashboard' %}">Dashboard</a></p>
 
-<h1>{{ community.name }}</h1>
+<h1>{{ object.community }}</h1>
 
-<h2>{{ bill }}: {{ bill.get_sum }}</h2>
+<h2>{{ object }}: {{ object.get_sum }}</h2>
+
+<form action="" method="post">
+{% csrf_token %}
+<input type="submit" name=" value="{% trans "Close this bill" %}"/>
+</form>
 
 <h2>{% trans "Payers" %}</h2>
 <ul>
-{% for payer in payers %}
+{% for payer in object.get_payers %}
 <li>{{ payer }}</li>
 {% endfor %}
 </ul>
 
 <h2>{% trans "Dues" %}</h2>
 <ul>
-{% for user, due in dues.items %}
+{% for user, due in object.get_dues.items %}
 <li>{{ due }} {{ user }}</li>
 {% endfor %}
 </ul>
 
 <h2>{% trans "Shoppings" %}</h2>
 <ul>
-{% for shopping in shoppings %}
+{% for shopping in object.get_shoppings %}
 <li>
 {% if shopping.user == user %}
 {{ shopping }} <a href="{{ shopping.get_absolute_url }}">edit</a>
@@ -37,6 +42,5 @@
 </li>
 {% endfor %}
 </ul>
-
 
 {% endblock %}

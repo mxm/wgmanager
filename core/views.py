@@ -10,7 +10,7 @@ from core.models import Community, Shopping, Bill
 from extra.models import ChatEntry, ShoppingListEntry
 from myauth.models import MyUser
 
-from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView, DetailView, ListView
 
 
 def homepage(request):
@@ -67,9 +67,6 @@ class ShoppingView(object):
     fields = ['shopping_day', 'shop', 'expenses', 'billing', 'num_products', 'tags', 'comment']
 
 class ShoppingCreate(ShoppingView, CreateView):
-    def get_form(self, form_class):
-
-        return super(ShoppingCreate, self).get_form(form_class)
 
     def form_valid(self, form):
         form.instance.community = get_community(self.kwargs['community_id'], self.request.user)
@@ -89,18 +86,17 @@ class ShoppingDelete(DeleteView):
     model = Shopping
     template_name = "shopping_confirm_delete.html"
 
-@login_required()
-def view_bill(request, community_id, bill_id):
-    bill = get_community_object(community_id, Bill, bill_id)
-    vars = {
-        'community': get_community(community_id, request.user),
-        'bill': bill,
-        'shoppings': bill.get_shoppings(),
-        'payers': bill.get_payers(),
-        'dues': bill.get_dues(),
-    }
-    return render(request, "bill.html", vars)
 
+class ViewBill(DetailView):
+    model = Bill
+    template_name = "bill.html"
+
+    def get_object(self):
+        community = get_community(self.kwargs['community_id'])
+        obj = super(ViewBill, self).get_object()
+        if not self.request.user.check_perms(community):
+            raise PermissionDenied
+        return obj
 
 def get_community(community_id):
     try:
