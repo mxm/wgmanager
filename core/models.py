@@ -8,11 +8,15 @@ from django.core.urlresolvers import reverse
 
 from core import util
 from core.util import first_day_of_month, last_day_of_month
+
 from myauth.models import MyUser
 
 class User(MyUser):
     class Meta:
         proxy = True
+
+    def get_shoppings(self, community):
+        return Shoppings.objects.filter(user=self, community=community)
 
     def check_perms(self, community, obj=None):
         return self in community.members.all() and (not obj or obj.user == self)
@@ -26,6 +30,15 @@ class Community(models.Model):
 
     def get_bills(self):
         return Bill.objects.filter(community=self)
+
+    def get_shoppings(self):
+        return Shopping.objects.filter(community=self)
+
+    def get_entries(self):
+        return ShoppingListEntry.objects.filter(community=self, time_done=None)
+
+    def get_messages(self):
+        return ChatEntry.objects.filter(community=self)
 
     def get_absolute_url(self):
         return reverse('community', args=[self.id])

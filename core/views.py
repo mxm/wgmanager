@@ -24,21 +24,15 @@ def dashboard(request):
     }
     return render(request, "dashboard.html", vars)
 
-@login_required()
-def community(request, community_id):
-    community = get_community(community_id)
-    if not request.user.check_perms(community):
-        raise PermissionDenied
-    vars = {
-        'community': community,
-        'last_shoppings': Shopping.objects.filter(community=community_id)[:5],
-        'my_last_shoppings': Shopping.objects.filter(user=request.user, community=community_id)[:5],
-        'last_list_entries': ShoppingListEntry.objects.filter(community=community_id, time_done=None),
-        'last_messages': ChatEntry.objects.filter(community=community_id)[:5],
-        'last_bills': Bill.objects.filter(community=community_id)[:5],
-    }
-    return render(request, "community.html", vars)
+class CommunityView(DetailView):
+    model = Community
+    template_name = "community.html"
 
+    def get_object(self):
+        obj = super(CommunityView, self).get_object()
+        if not self.request.user.check_perms(obj):
+            raise PermissionDenied
+        return obj
 
 class CommunityCreate(CreateView):
     model = Community
