@@ -5,7 +5,9 @@
 
 {% block content %}
 
-<h1>{{ community.name }}</h1>
+<h1>{{ object.community.name }}</h1>
+
+<a href="{{ object.community.get_absolute_url}}">{% trans "back" %}</a>
 
 <form action ="{{request.path}}" method="post">
 {% csrf_token %}

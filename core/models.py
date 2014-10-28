@@ -18,9 +18,6 @@ class User(MyUser):
     def get_shoppings(self, community):
         return Shoppings.objects.filter(user=self, community=community)
 
-    def check_perms(self, community, obj=None):
-        return self in community.members.all() and (not obj or obj.user == self)
-
 class Community(models.Model):
     # TODO name should be unique for clarity?
     name = models.CharField(max_length=32)
