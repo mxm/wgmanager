@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
 from core.models import Community, Shopping, Bill
-from extra.models import ChatEntry, ShoppingListEntry
+from core.models import ChatEntry, ShoppingListEntry
 from myauth.models import MyUser
 
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView, ListView

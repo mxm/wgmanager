@@ -47,7 +47,6 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.google',
     'myauth',
     'core',
-    'extra',
 )
 
 MIDDLEWARE_CLASSES = (
