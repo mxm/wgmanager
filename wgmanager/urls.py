@@ -3,7 +3,7 @@ from django.contrib import admin
 
 from core.views import ShoppingCreate, ShoppingUpdate, ShoppingDelete
 from core.views import CommunityView, CommunityCreate
-from core.views import ViewBill
+from core.views import BillView
 
 from django.contrib.auth.decorators import login_required
 
@@ -29,7 +29,7 @@ urlpatterns = patterns('',
     url(r'^community/(?P<community_id>\d+)/shopping/(?P<pk>\d+)/delete/$', login_required(ShoppingDelete.as_view()), name='shopping_delete'),
 
     #url(r'^community/(?P<community_id>\d+)/bill/(?P<bill_id>\d+)/$', 'core.views.view_bill', name='bill'),
-    url(r'^community/(?P<community_id>\d+)/bill/(?P<pk>\d+)/$', login_required(ViewBill.as_view()), name='bill'),
+    url(r'^community/(?P<community_id>\d+)/bill/(?P<pk>\d+)/$', login_required(BillView.as_view()), name='bill'),
 
     url(r'^login.html$', 'django.contrib.auth.views.login',
         {'template_name': 'login.html'}),

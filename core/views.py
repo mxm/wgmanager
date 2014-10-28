@@ -81,13 +81,13 @@ class ShoppingDelete(DeleteView):
     template_name = "shopping_confirm_delete.html"
 
 
-class ViewBill(DetailView):
+class BillView(DetailView):
     model = Bill
     template_name = "bill.html"
 
     def get_object(self):
         community = get_community(self.kwargs['community_id'])
-        obj = super(ViewBill, self).get_object()
+        obj = super(BillView, self).get_object()
         if not self.request.user.check_perms(community):
             raise PermissionDenied
         return obj
