@@ -1,5 +1,5 @@
-from django.db import models
-from django.db.models import Sum
+from django.db import models, transaction
+from django.db.models import Sum, Q
 
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -75,7 +75,6 @@ class Bill(models.Model):
             dues[payer] = payer_due
         return dues
 
-
     def toggle_close(self):
         if not self.is_closed:
             # make out a bill / calculate dues
@@ -83,6 +82,24 @@ class Bill(models.Model):
             pass
         self.is_closed = not self.is_closed
         self.save()
+
+    def get_conflicting_bills(self):
+        community_bills = self.community.get_bills()
+        conflicting_bills = community_bills.filter(
+            Q(start__lte=self.start) | Q(start__lte=self.end)).filter(
+            Q(end__gte=self.start)   | Q(end__gte=self.end)
+        )
+        # we need to filter out ourself (i.e. if we change a bill range)
+        # figure out if we are an existing object
+        if self.id:
+            return conflicting_bills.exclude(id=self.id)
+        else:
+            return conflicting_bills
+
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        if not self.get_conflicting_bills().exists():
+            super(Bill, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('bill', args=[self.community.id, self.id])
