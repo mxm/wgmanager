@@ -76,11 +76,13 @@ class Bill(models.Model):
         return dues
 
 
-    def close(self):
-        if not self.closed:
+    def toggle_close(self):
+        if not self.is_closed:
             # make out a bill / calculate dues
             # send mail
-            self.is_closed = True
+            pass
+        self.is_closed = not self.is_closed
+        self.save()
 
     def get_absolute_url(self):
         return reverse('bill', args=[self.community.id, self.id])

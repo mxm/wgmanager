@@ -70,7 +70,7 @@ class ShoppingView(ProtectedView):
 class ShoppingCreate(ShoppingView, CreateView):
     def form_valid(self, form):
         community_id = self.kwargs['community_id']
-        form.instance.community = get_community_or_fail(community_id, self.request.user)
+        form.instance.community = get_object_or_fail(self.request.user, Community, community_id)
         form.instance.user = self.request.user
         return super(ShoppingCreate, self).form_valid(form)
 
@@ -102,23 +102,28 @@ class BillView(ProtectedView, DetailView):
         fail_on_false_community(self.request.user, obj)
         return obj
 
+def close_bill(request, **kwargs):
+    #community_id = kwargs['community_id']
+    bill = get_object_or_fail(request.user, Bill, kwargs['pk'])
+    bill.toggle_close()
+    return redirect('bill', **kwargs)
 
 def fail_on_false_community(user, obj):
     if obj.__class__ == Community:
-        if not obj.members.filter(id=user.id).exists():
-            raise PermissionDenied
+        member_set = obj.members
     else:
-        if not obj.community.members.filter(id=user.id).exists():
-            raise PermissionDenied
+        member_set = obj.community.members
+    if not member_set.filter(id=user.id).exists():
+        raise PermissionDenied
 
 def fail_on_false_ownership(user, obj):
     if obj.user != user:
         raise PermissionDenied
 
-def get_community_or_fail(community_id, user):
+def get_object_or_fail(user, obj_class, obj_id):
     try:
-        community = Community.objects.get(id=community_id)
-    except Community.DoesNotExist:
+        obj = obj_class.objects.get(id=obj_id)
+    except obj_class.DoesNotExist:
         raise Http404
-    fail_on_false_community(user, community)
-    return community
+    fail_on_false_community(user, obj)
+    return obj

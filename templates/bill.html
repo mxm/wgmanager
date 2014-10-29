@@ -11,9 +11,13 @@
 
 <h2>{{ object }}: {{ object.get_sum }}</h2>
 
-<form action="" method="post">
+<form action="{% url 'close_bill' community_id=object.community.id pk=object.id %}" method="post">
 {% csrf_token %}
-<input type="submit" name=" value="{% trans "Close this bill" %}"/>
+{% if object.is_closed %}
+<input type="submit" name="submit" value="{% trans "Open this bill" %}"/>
+{% else %}
+<input type="submit" name="submit" value="{% trans "Close this bill" %}"/>
+{% endif %}
 </form>
 
 <h2>{% trans "Payers" %}</h2>
