@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
 
-from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 
 from django.utils.decorators import method_decorator
@@ -57,7 +56,7 @@ class CommunityCreate(ProtectedView, CreateView):
         # add ourselves so we can access the new community
         community = form.save()
         community.members.add(self.request.user)
-        return HttpResponseRedirect(community.get_absolute_url())
+        return redirect(community.get_absolute_url())
 
 
 class ShoppingView(ProtectedView):
