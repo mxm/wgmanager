@@ -58,22 +58,26 @@ class CommunityCreate(ProtectedView, CreateView):
         community.members.add(self.request.user)
         return redirect(community.get_absolute_url())
 
+class CommunityCreateView(ProtectedView, CreateView):
+    # check and set the community for this user before form is validated (values needed for validation)
+    def get_form(self, form_class):
+        form = super().get_form(form_class)
+        community_id = self.kwargs['community_id']
+        form.instance.community = get_object_or_fail(self.request.user, Community, community_id)
+        form.instance.user = self.request.user
+        return form
 
-class ShoppingView(ProtectedView):
+class ShoppingFormBase(object):
     model = Shopping
     # TODO give own template
     template_name = "generic_form.html"
     #template_name = "shopping_form.html"
     fields = ['shopping_day', 'shop', 'expenses', 'billing', 'num_products', 'tags', 'comment']
 
-class ShoppingCreate(ShoppingView, CreateView):
-    def form_valid(self, form):
-        community_id = self.kwargs['community_id']
-        form.instance.community = get_object_or_fail(self.request.user, Community, community_id)
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+class ShoppingCreate(ShoppingFormBase, CommunityCreateView):
+    pass
 
-class ShoppingUpdate(ShoppingView, UpdateView):
+class ShoppingUpdate(ShoppingFormBase, UpdateView):
     def get_object(self):
         obj = super().get_object()
         fail_on_false_ownership(self.request.user, obj)
