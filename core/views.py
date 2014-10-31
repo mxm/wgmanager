@@ -96,7 +96,7 @@ class ShoppingDelete(ProtectedView, DeleteView):
         return reverse_lazy('community', args=[self.kwargs['community_id']])
 
 
-class BillView(ProtectedView, DetailView):
+class BillView(DetailView):
     model = Bill
     template_name = "bill.html"
 
@@ -104,6 +104,18 @@ class BillView(ProtectedView, DetailView):
         obj = super().get_object()
         fail_on_false_community(self.request.user, obj)
         return obj
+
+class BillFormBase(object):
+    model = Bill
+    template_name = "generic_form.html"
+    fields = ['start', 'end', 'is_special', 'is_closed', 'description']
+
+class BillCreate(BillFormBase, CommunityCreateView):
+    pass
+
+
+class BillUpdate(BillFormBase, UpdateView):
+    pass
 
 
 def close_bill(request, **kwargs):
