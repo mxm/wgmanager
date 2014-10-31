@@ -11,6 +11,8 @@
 
 <h2>{{ object }}: {{ object.get_sum }}</h2>
 
+<p><a href="{{ bill.get_absolute_url }}edit/">{% trans "Edit this bill" %}</a></p>
+
 <form action="{% url 'close_bill' community_id=object.community.id pk=object.id %}" method="post">
 {% csrf_token %}
 {% if object.is_closed %}

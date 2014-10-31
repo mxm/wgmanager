@@ -176,6 +176,13 @@ class Shopping(models.Model):
     class Meta:
         ordering = ["-shopping_day"]
 
+    def clean(self):
+        if Bill.objects.filter(
+                start__lte=self.shopping_day, end__gte=self.shopping_day,
+                is_closed=True
+        ).exists():
+            raise ValidationError(_('You cannot add or modify a shopping of a closed bill'))
+
     def get_absolute_url(self):
         return reverse('shopping', args=[self.community.id, self.id])
 
