@@ -1,6 +1,8 @@
 from django.db import models, transaction
 from django.db.models import Sum, Q
 
+from django.core.exceptions import ValidationError
+
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 
@@ -96,9 +98,20 @@ class Bill(models.Model):
         else:
             return conflicting_bills
 
+    def clean(self):
+        if not self.start <= self.end:
+            raise ValidationError(_('Start date must be before or on end date'))
+        if self.get_conflicting_bills().exists():
+            raise ValidationError(_('There is a bill overlaping with this bill'))
+
     @transaction.atomic
     def save(self, *args, **kwargs):
-        if not self.get_conflicting_bills().exists():
+        if self.get_conflicting_bills().exists():
+            # this is a very unlikely case where two users create bills at the same time
+            # which are in conflict with each other. it's ok to fail here, the user can
+            # try again.
+            raise Exception
+        else:
             super().save(*args, **kwargs)
 
     def get_absolute_url(self):
