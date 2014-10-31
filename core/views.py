@@ -17,7 +17,7 @@ from django.views.generic import CreateView, UpdateView, DeleteView, DetailView,
 class ProtectedView(View):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(ProtectedView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 def homepage(request):
@@ -36,7 +36,7 @@ class CommunityView(ProtectedView, DetailView):
     template_name = "community.html"
 
     def get_object(self, qs=None):
-        obj = super(CommunityView, self).get_object(qs)
+        obj = super().get_object(qs)
         fail_on_false_community(self.request.user, obj)
         return obj
 
@@ -48,7 +48,7 @@ class CommunityCreate(ProtectedView, CreateView):
     fields = ['name', 'members']
 
     def get_form(self, form_class):
-        form = super(CommunityCreate, self).get_form(form_class)
+        form = super().get_form(form_class)
         form.fields['members'].queryset = User.objects.exclude(id=self.request.user.id)
         return form
 
@@ -71,11 +71,11 @@ class ShoppingCreate(ShoppingView, CreateView):
         community_id = self.kwargs['community_id']
         form.instance.community = get_object_or_fail(self.request.user, Community, community_id)
         form.instance.user = self.request.user
-        return super(ShoppingCreate, self).form_valid(form)
+        return super().form_valid(form)
 
 class ShoppingUpdate(ShoppingView, UpdateView):
     def get_object(self):
-        obj = super(ShoppingUpdate, self).get_object()
+        obj = super().get_object()
         fail_on_false_ownership(self.request.user, obj)
         return obj
 
@@ -86,7 +86,7 @@ class ShoppingDelete(ProtectedView, DeleteView):
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
         fail_on_false_ownership(request.user, obj)
-        return super(ShoppingDelete, self).delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse_lazy('community', args=[self.kwargs['community_id']])
@@ -97,9 +97,10 @@ class BillView(ProtectedView, DetailView):
     template_name = "bill.html"
 
     def get_object(self):
-        obj = super(BillView, self).get_object()
+        obj = super().get_object()
         fail_on_false_community(self.request.user, obj)
         return obj
+
 
 def close_bill(request, **kwargs):
     #community_id = kwargs['community_id']

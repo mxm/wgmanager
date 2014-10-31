@@ -99,7 +99,7 @@ class Bill(models.Model):
     @transaction.atomic
     def save(self, *args, **kwargs):
         if not self.get_conflicting_bills().exists():
-            super(Bill, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('bill', args=[self.community.id, self.id])
