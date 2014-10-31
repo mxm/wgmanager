@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 
 from core import util
-from core.util import first_day_of_month, last_day_of_month
+from core.util import first_day_of_month, last_day_of_month, get_month_name
 
 from myauth.models import MyUser
 
@@ -118,7 +118,11 @@ class Bill(models.Model):
         return reverse('bill', args=[self.community.id, self.id])
 
     def __str__(self):
-        return str(self.start) + " - " + str(self.end)
+        # display month year if bill covers a whole month
+        if self.start.day == first_day_of_month(self.start).day and self.end.day == last_day_of_month(self.end).day:
+            return get_month_name(self.start.month) + " " + str(self.start.year)
+        else:
+            return str(self.start) + " - " + str(self.end)
 
 
 class Payer(models.Model):
