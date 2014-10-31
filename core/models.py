@@ -45,8 +45,8 @@ class Community(models.Model):
 
 class Bill(models.Model):
     community = models.ForeignKey(Community)
-    start = models.DateField(default=first_day_of_month)
-    end = models.DateField(default=last_day_of_month)
+    start = models.DateField(default=first_day_of_month, db_index=True)
+    end = models.DateField(default=last_day_of_month, db_index=True)
     is_special = models.BooleanField(default=False)
     is_closed = models.BooleanField(default=False)
     description = models.CharField(max_length=1024, null=True, blank=True)
@@ -151,7 +151,7 @@ class Shopping(models.Model):
     user = models.ForeignKey(User)
     community = models.ForeignKey(Community)
     time = models.DateTimeField(default=timezone.now)
-    shopping_day = models.DateField(default=timezone.now)
+    shopping_day = models.DateField(default=timezone.now, db_index=True)
     shop = models.ForeignKey(Shop, related_name="shoppings")
     expenses = models.DecimalField(max_digits=10, decimal_places=2)
     num_products = models.PositiveIntegerField()
