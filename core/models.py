@@ -18,7 +18,7 @@ class User(MyUser):
         proxy = True
 
     def get_shoppings(self, community):
-        return Shoppings.objects.filter(user=self, community=community)
+        return Shopping.objects.filter(user=self, community=community)
 
 class Community(models.Model):
     # TODO name should be unique for clarity?

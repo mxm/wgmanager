@@ -35,7 +35,7 @@
 
 <h2>{% trans "My last shoppings" %}</h2>
 <ul>
-{% for shopping in object.get_shoppings|lastn:n %}
+{% for shopping in user_shoppings|lastn:n %}
 <li>{{ shopping }}</li>
 {% endfor %}
 </ul>

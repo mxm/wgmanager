@@ -40,6 +40,11 @@ class CommunityView(ProtectedView, DetailView):
         fail_on_false_community(self.request.user, obj)
         return obj
 
+    def get_context_data(self,**kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_shoppings'] = self.request.user.get_shoppings(self.object.id)
+        return context
+
 class CommunityCreate(ProtectedView, CreateView):
     model = Community
     # TODO give own template
