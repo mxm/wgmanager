@@ -22,10 +22,10 @@
 {% endif %}
 </form>
 
-<h2>{% trans "Payers" %}</h2>
+<h2>{% trans "Payers" %}<a href="{% url 'add_payer' community_id=object.community.id bill_id=object.id%}">+</a></h2>
 <ul>
 {% for payer in object.get_payers %}
-<li>{{ payer }}</li>
+<li>{{ payer }} <a href="{% url 'delete_payer' community_id=object.community.id bill_id=object.id pk=payer.id %}">{% trans "delete" %}</a></li>
 {% endfor %}
 </ul>
 

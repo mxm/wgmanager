@@ -128,7 +128,7 @@ class Bill(models.Model):
 class Payer(models.Model):
     user = models.ForeignKey(User)
     bill = models.ForeignKey(Bill, related_name="payers")
-    fraction = models.DecimalField(max_digits=3, decimal_places=2)
+    fraction = models.DecimalField(default=1.0, max_digits=3, decimal_places=2)
 
     class Meta:
         unique_together = (('user', 'bill'),)
@@ -138,6 +138,12 @@ class Payer(models.Model):
         user_expenses = shoppings.aggregate(Sum('expenses'))['expenses__sum']
         return user_expenses if user_expenses != None else 0
 
+    def clean(self):
+        if hasattr(self, 'user') and Payer.objects.filter(user=self.user, bill=self.bill).exists():
+            raise ValidationError(_("User already added to this bill"))
+
+    def get_absolute_url(self):
+        return self.bill.get_absolute_url()
 
     def __str__(self):
         return _("Bill '%(bill)s': %(user)s with fraction %(fraction)s") % {'bill': self.bill, 'user': self.user, 'fraction': self.fraction}

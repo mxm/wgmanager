@@ -7,11 +7,12 @@
 
 <h1>{{ object.community.name }}</h1>
 
-<a href="{{ object.community.get_absolute_url}}">{% trans "back" %}</a>
+<a href="{{ object.community.get_absolute_url }}">{% trans "back" %}</a>
 
 <form action ="{{request.path}}" method="post">
 {% csrf_token %}
 {{ form.as_p }}
+{{ form2.as_p }}
 <input type="submit" value="{% trans "Submit" %}">
 </form>
 

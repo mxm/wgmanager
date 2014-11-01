@@ -1,0 +1,20 @@
+{% extends "wgmanager_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete" %}{% endblock %}
+
+{% block content %}
+
+<h1>{{ object.community.name }}</h1>
+
+<a href="{{ object.community.get_absolute_url}}">{% trans "back" %}</a>
+
+<form action="" method="post">
+  {% csrf_token %}
+    <p>Are you sure you want to delete "{{ object }}"?</p>
+    <input type="submit" value="Confirm" />
+</form>
+
+
+
+{% endblock %}

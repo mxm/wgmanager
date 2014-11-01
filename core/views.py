@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
-from core.models import User, Community, Shopping, Bill
+from core.models import User, Community, Shopping, Bill, Payer
 from core.models import ChatEntry, ShoppingListEntry
 
 from django.views.generic import View
@@ -110,13 +110,34 @@ class BillFormBase(object):
     template_name = "generic_form.html"
     fields = ['start', 'end', 'is_special', 'is_closed', 'description']
 
+from django.forms.models import inlineformset_factory
 class BillCreate(BillFormBase, CommunityCreateView):
     pass
-
 
 class BillUpdate(BillFormBase, UpdateView):
     pass
 
+
+class PayerCreate(ProtectedView, CreateView):
+    model = Payer
+    template_name = "generic_form.html"
+    fields = ['user', 'fraction']
+
+    def get_form(self, form_class):
+        form = super().get_form(form_class)
+        bill_id = self.kwargs['bill_id']
+        bill = get_object_or_fail(self.request.user, Bill, bill_id)
+        form.instance.bill = bill
+        users = [payer.user.id for payer in bill.payers.all()]
+        form.fields['user'].queryset = User.objects.exclude(id__in=users)
+        return form
+
+class PayerDelete(ProtectedView, DeleteView):
+    model = Payer
+    template_name = "generic_delete.html"
+
+    def get_success_url(self):
+        return reverse_lazy('bill', args=[self.kwargs['community_id'], self.kwargs['bill_id']])
 
 def close_bill(request, **kwargs):
     #community_id = kwargs['community_id']
